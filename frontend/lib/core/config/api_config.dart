@@ -17,6 +17,7 @@ class ApiConfig {
   static const String refresh = '/api/auth/refresh';
   static const String logout = '/api/auth/logout';
   static const String profile = '/api/user/profile';
+  static const String market = '/api/market';
 
   /// Timeouts
   static const Duration connectTimeout = Duration(seconds: 10);

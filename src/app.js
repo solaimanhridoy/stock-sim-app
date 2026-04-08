@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const marketRoutes = require('./routes/market');
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use(cookieParser());
 // ---------------------------------------------------------------------------
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/market', marketRoutes);
 
 // Health check
 app.get('/', (_req, res) => {

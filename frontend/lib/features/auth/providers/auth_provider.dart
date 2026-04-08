@@ -108,24 +108,31 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Trigger Google Sign-In
-      final googleUser = await _googleSignIn.signIn();
+      // 1. On Web, try silent sign-in first to avoid popups
+      GoogleSignInAccount? googleUser;
+      if (kIsWeb) {
+        googleUser = await _googleSignIn.signInSilently();
+      }
+
+      // 2. If silent failed or not on web, trigger full Sign-In
+      googleUser ??= await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        // User cancelled
         _status = AuthStatus.unauthenticated;
         _errorKey = 'google_sign_in_cancelled';
         notifyListeners();
         return;
       }
 
-      // 1.5 On Flutter Web, GIS splits Authentication and Authorization. 
-      // We must explicitly request scopes to receive an accessToken.
+      // 3. On Web, request permissions if not already granted
       if (kIsWeb) {
-        await _googleSignIn.requestScopes(['email', 'profile']);
+        bool hasScopes = await _googleSignIn.canAccessScopes(['email', 'profile']);
+        if (!hasScopes) {
+          await _googleSignIn.requestScopes(['email', 'profile']);
+        }
       }
 
-      // 2. Get tokens
+      // 4. Get tokens
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
       final accessToken = googleAuth.accessToken;
@@ -137,7 +144,7 @@ class AuthProvider extends ChangeNotifier {
         return;
       }
 
-      // 3. Send tokens to backend
+      // 5. Send tokens to backend
       final result = await _apiService.loginWithGoogle(
         idToken: idToken,
         accessToken: accessToken,
@@ -151,10 +158,14 @@ class AuthProvider extends ChangeNotifier {
         _status = AuthStatus.error;
         _errorKey = result.error ?? 'login_error';
       }
-    } catch (e, stackTrace) {
-      debugPrint('signInWithGoogle error: $e\n$stackTrace');
+    } catch (e) {
+      debugPrint('signInWithGoogle error: $e');
+      if (e.toString().contains('popup_closed')) {
+        _errorKey = 'google_sign_in_cancelled'; // Treat as user cancellation
+      } else {
+        _errorKey = 'something_went_wrong';
+      }
       _status = AuthStatus.error;
-      _errorKey = 'something_went_wrong';
     }
 
     notifyListeners();

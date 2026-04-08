@@ -224,6 +224,50 @@ class ApiService {
     }
   }
 
+  // ── Market Data ────────────────────────────────────────────────
+  
+  Future<ApiResult<Map<String, dynamic>>> getMarketData(String date) async {
+    try {
+      final response = await _authRequest(
+        request: (token) => http.get(
+          Uri.parse('${ApiConfig.baseUrl}${ApiConfig.market}?date=$date'),
+          headers: {'Authorization': 'Bearer $token'},
+        ).timeout(ApiConfig.receiveTimeout),
+      );
+
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+      if (response.statusCode == 200 && body['success'] == true) {
+        return ApiResult.ok(body['data'] as Map<String, dynamic>);
+      }
+
+      final errorMsg = body['error']?['message'] as String? ?? 'Failed to fetch market data';
+      return ApiResult.fail(errorMsg, statusCode: response.statusCode);
+    } on SocketException {
+      return ApiResult.fail('network_error');
+    } catch (e) {
+      return ApiResult.fail('something_went_wrong');
+    }
+  }
+
+  Future<ApiResult<Map<String, dynamic>>> getNextMarketDate(String current) async {
+    try {
+      final response = await _authRequest(
+        request: (token) => http.get(
+          Uri.parse('${ApiConfig.baseUrl}/api/market/next-date?current=$current'),
+          headers: {'Authorization': 'Bearer $token'},
+        ).timeout(ApiConfig.receiveTimeout),
+      );
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      if (response.statusCode == 200 && body['success'] == true) {
+        return ApiResult.ok(body['data'] as Map<String, dynamic>);
+      }
+      return ApiResult.fail(body['error']?['message'] ?? 'No more data');
+    } catch (_) {
+      return ApiResult.fail('something_went_wrong');
+    }
+  }
+
   // ── Logout ──────────────────────────────────────────────────────
 
   Future<void> logout() async {

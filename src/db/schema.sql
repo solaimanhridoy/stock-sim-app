@@ -58,3 +58,54 @@ BEGIN
     RETURN deleted_count;
 END;
 $$ LANGUAGE plpgsql;
+
+-- ======================
+-- Stock Master
+-- ======================
+CREATE TABLE stocks (
+    ticker          VARCHAR(20) PRIMARY KEY,
+    company_name    VARCHAR(255),
+    sector          VARCHAR(100),
+    is_active       BOOLEAN DEFAULT TRUE
+);
+
+-- ======================
+-- Market Prices (Historical & Current)
+-- ======================
+CREATE TABLE prices (
+    id          SERIAL PRIMARY KEY,
+    date        DATE NOT NULL,
+    ticker      VARCHAR(20) NOT NULL REFERENCES stocks(ticker) ON DELETE CASCADE,
+    open        DECIMAL(12,2) NOT NULL,
+    high        DECIMAL(12,2) NOT NULL,
+    low         DECIMAL(12,2) NOT NULL,
+    close       DECIMAL(12,2) NOT NULL,
+    volume      BIGINT NOT NULL,
+    UNIQUE(date, ticker)
+);
+
+CREATE INDEX idx_prices_date_ticker ON prices(date, ticker);
+CREATE INDEX idx_prices_ticker ON prices(ticker);
+
+-- ======================
+-- Portfolio and Transactions
+-- ======================
+CREATE TABLE portfolios (
+    id          SERIAL PRIMARY KEY,
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    ticker      VARCHAR(20) NOT NULL REFERENCES stocks(ticker),
+    quantity    INTEGER NOT NULL DEFAULT 0,
+    avg_price   DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    UNIQUE(user_id, ticker)
+);
+
+CREATE TABLE transactions (
+    id          SERIAL PRIMARY KEY,
+    user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    date        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ticker      VARCHAR(20) NOT NULL REFERENCES stocks(ticker),
+    action      VARCHAR(10) NOT NULL CHECK (action IN ('BUY', 'SELL')),
+    price       DECIMAL(12,2) NOT NULL,
+    quantity    INTEGER NOT NULL,
+    total_value DECIMAL(12,2) NOT NULL
+);

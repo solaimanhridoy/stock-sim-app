@@ -142,4 +142,27 @@ class AppTheme {
       ),
     );
   }
+
+  static InputDecoration inputDecoration({required String hint, IconData? icon}) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: icon != null ? Icon(icon, color: textSecondary, size: 20) : null,
+      filled: true,
+      fillColor: surfaceCard,
+      hintStyle: GoogleFonts.inter(color: textMuted, fontSize: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: borderRadiusMd,
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: borderRadiusMd,
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: borderRadiusMd,
+        borderSide: const BorderSide(color: primary, width: 1.5),
+      ),
+    );
+  }
 }

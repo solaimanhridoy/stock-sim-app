@@ -55,6 +55,12 @@ class AppLocalizations {
       'dashboard_title': 'Dashboard',
       'welcome_back': 'Welcome back!',
       'virtual_balance': 'Virtual Balance',
+      'simulation_date': 'Simulation Date',
+      'next_day': 'Next Day',
+      'market_summary': 'Market Summary',
+      'top_gainers': 'Top Gainers',
+      'top_losers': 'Top Losers',
+      'search_stocks': 'Search Stocks...',
 
       // General
       'loading': 'Loading...',
@@ -98,6 +104,12 @@ class AppLocalizations {
       'dashboard_title': 'ড্যাশবোর্ড',
       'welcome_back': 'আবার স্বাগতম!',
       'virtual_balance': 'ভার্চুয়াল ব্যালেন্স',
+      'simulation_date': 'সিমুলেশন তারিখ',
+      'next_day': 'পরের দিন',
+      'market_summary': 'মার্কেট সারাংশ',
+      'top_gainers': 'সেরা লাভজনক',
+      'top_losers': 'সেরা লোকসান',
+      'search_stocks': 'শেয়ার খুঁজুন...',
 
       // General
       'loading': 'লোড হচ্ছে...',

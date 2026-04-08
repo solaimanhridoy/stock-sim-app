@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
+import 'features/dashboard/providers/market_provider.dart';
 import 'features/auth/screens/splash_wrapper.dart';
 
 void main() async {
@@ -30,6 +30,7 @@ class StockSimApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: localeProvider),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MarketProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, _) {

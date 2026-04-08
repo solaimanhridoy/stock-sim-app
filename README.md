@@ -16,7 +16,7 @@
 
 ## 🚀 Current Project Status
 
-**Overall MVP Progress:** `[████████░░░░░░░░░░░░] 35%`
+**Overall MVP Progress:** `[██████████░░░░░░░░░░] 50%`
 
 We are currently finishing the **Authentication and Setup Phase** and transitioning into the core **Market Data and Trading Logic**.
 
@@ -26,6 +26,7 @@ We are currently finishing the **Authentication and Setup Phase** and transition
 - [x] **Robust Authentication:** Secure Google Sign-In integrated with JWT and cross-platform support (Web & Mobile).
 - [x] **UI Foundations:** Login screen, Profile Setup screen, and Animated UI Backgrounds.
 - [x] **DevOps Basics:** Automated startup scripts (`run.bat` & `run.ps1`) to launch the entire stack instantly.
+- [x] **Multi-stock Simulation Engine:** CSV Data integration with PostgreSQL.
 
 ### 🚧 Up Next
 - [ ] **Stock Market Data Integration:** Fetching realistic stock symbols and prices.

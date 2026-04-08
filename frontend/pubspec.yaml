@@ -1,0 +1,52 @@
+name: stock_sim
+description: Bangladesh Stock Market Simulation App
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Google Sign-In
+  google_sign_in: ^6.2.1
+
+  # HTTP client
+  http: ^1.2.1
+
+  # Secure token storage (mobile)
+  flutter_secure_storage: ^9.2.2
+
+  # Local key/value storage
+  shared_preferences: ^2.2.2
+
+  # State management (lightweight)
+  provider: ^6.1.2
+
+  # Google Fonts
+  google_fonts: ^6.2.1
+
+  # SVG support
+  flutter_svg: ^2.0.10
+
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.2
+  cookie_jar: ^4.0.9
+  dio_cookie_manager: ^3.4.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/

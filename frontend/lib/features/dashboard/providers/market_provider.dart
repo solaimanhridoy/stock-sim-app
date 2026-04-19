@@ -8,12 +8,10 @@ class MarketProvider extends ChangeNotifier {
 
   MarketStatus _status = MarketStatus.initial;
   String? _errorMessage;
-  
-  // Simulation Date — dynamically loaded on init
-  String _currentDate = ''; 
-  
+  String _currentDate = '';
   Map<String, dynamic>? _marketSummary;
   List<dynamic> _stocks = [];
+  String _searchQuery = '';
 
   // ── Getters ─────────────────────────────────────────────────────
 
@@ -21,32 +19,37 @@ class MarketProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get currentDate => _currentDate;
   Map<String, dynamic>? get marketSummary => _marketSummary;
-  List<dynamic> get stocks => _stocks;
   bool get isLoading => _status == MarketStatus.loading;
+
+  List<dynamic> get stocks {
+    if (_searchQuery.isEmpty) return _stocks;
+    return _stocks.where((s) {
+      final ticker = (s['ticker'] ?? '').toString().toLowerCase();
+      final name = (s['company_name'] ?? '').toString().toLowerCase();
+      final q = _searchQuery.toLowerCase();
+      return ticker.contains(q) || name.contains(q);
+    }).toList();
+  }
+
+  String get searchQuery => _searchQuery;
 
   // ── Actions ─────────────────────────────────────────────────────
 
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  /// Fetch market data. Server auto-initializes sim date if needed.
   Future<void> fetchMarketData() async {
     _status = MarketStatus.loading;
     _errorMessage = null;
     notifyListeners();
 
-    // If no date is set, find the first available date
-    if (_currentDate.isEmpty) {
-      final firstDateResult = await _apiService.getNextMarketDate('1900-01-01');
-      if (firstDateResult.success && firstDateResult.data != null) {
-        _currentDate = firstDateResult.data!['next_date'].toString().split('T')[0];
-      } else {
-        _status = MarketStatus.error;
-        _errorMessage = 'no_historical_data_available';
-        notifyListeners();
-        return;
-      }
-    }
-
-    final result = await _apiService.getMarketData(_currentDate);
+    final result = await _apiService.getMarketData();
 
     if (result.success && result.data != null) {
+      _currentDate = (result.data!['date'] ?? '').toString().split('T')[0];
       _marketSummary = result.data!['summary'];
       _stocks = result.data!['market'] ?? [];
       _status = MarketStatus.loaded;
@@ -54,33 +57,26 @@ class MarketProvider extends ChangeNotifier {
       _status = MarketStatus.error;
       _errorMessage = result.error ?? 'failed_to_load_market';
     }
-    
+
     notifyListeners();
   }
 
-  /// Simulation: Move to the next actual trading day from the DB.
+  /// Server-authoritative: advance to the next trading day.
   Future<void> nextDay() async {
     _status = MarketStatus.loading;
     notifyListeners();
 
-    final result = await _apiService.getNextMarketDate(_currentDate);
+    final advanceResult = await _apiService.advanceDay();
 
-    if (result.success && result.data != null) {
-      final next = result.data!['next_date'];
-      // Handle Postgres DATE string format correctly
-      _currentDate = next.toString().split('T')[0];
+    if (advanceResult.success && advanceResult.data != null) {
+      final simDate = advanceResult.data!['simulation_date'];
+      _currentDate = simDate.toString().split('T')[0];
+      // Now fetch market data for the new date
       await fetchMarketData();
     } else {
       _status = MarketStatus.error;
-      _errorMessage = 'No more historical data available';
+      _errorMessage = advanceResult.error ?? 'No more historical data available';
       notifyListeners();
     }
   }
-}
-
-// Helper extension to handle BD specific weekends if needed
-extension BDWeekend on DateTime {
-  static const int friday = 5;
-  static const int saturday = 6;
-  bool get isBDWeekend => weekday == friday || weekday == saturday;
 }

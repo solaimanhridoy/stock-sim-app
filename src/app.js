@@ -8,6 +8,9 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const marketRoutes = require('./routes/market');
+const tradeRoutes = require('./routes/trade');
+const portfolioRoutes = require('./routes/portfolio');
+const leaderboardRoutes = require('./routes/leaderboard');
 
 const app = express();
 
@@ -28,19 +31,19 @@ app.use(cors({
   credentials: true,
 }));
 
-// Global rate limiter — 100 requests per 15 min per IP
+// Global rate limiter
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: process.env.NODE_ENV === 'production' ? 100 : 10000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many requests, try again later' } },
 }));
 
-// Stricter limiter for auth endpoints — 20 requests per 15 min
+// Stricter limiter for auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: process.env.NODE_ENV === 'production' ? 20 : 10000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: { code: 'RATE_LIMIT', message: 'Too many auth attempts, try again later' } },
@@ -58,10 +61,13 @@ app.use(cookieParser());
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/market', marketRoutes);
+app.use('/api/trade', tradeRoutes);
+app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
 
 // Health check
 app.get('/', (_req, res) => {
-  res.status(200).json({ status: 'ok', service: 'auth-api' });
+  res.status(200).json({ status: 'ok', service: 'stocksim-api' });
 });
 
 // ---------------------------------------------------------------------------

@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../providers/auth_provider.dart';
-import '../../auth/screens/login_screen.dart';
-import '../../auth/screens/profile_setup_screen.dart';
-import '../../dashboard/screens/dashboard_screen.dart';
+import 'login_screen.dart';
+import 'profile_setup_screen.dart';
+import '../../navigation/main_navigation.dart';
 
 /// Wraps the app entry to show a splash screen while authenticating.
 /// Directs the user to the appropriate screen based on auth state.
@@ -42,11 +42,10 @@ class _SplashWrapperState extends State<SplashWrapper> {
         }
 
         if (auth.status == AuthStatus.authenticated) {
-          // Route new users to profile setup, returning users to dashboard
           if (auth.isNewUser) {
             return const ProfileSetupScreen();
           }
-          return const DashboardScreen();
+          return const MainNavigation();
         }
 
         return const LoginScreen();

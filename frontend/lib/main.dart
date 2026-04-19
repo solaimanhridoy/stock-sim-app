@@ -7,6 +7,8 @@ import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/dashboard/providers/market_provider.dart';
+import 'features/portfolio/providers/portfolio_provider.dart';
+import 'features/leaderboard/providers/leaderboard_provider.dart';
 import 'features/auth/screens/splash_wrapper.dart';
 
 void main() async {
@@ -31,11 +33,13 @@ class StockSimApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: localeProvider),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => MarketProvider()),
+        ChangeNotifierProvider(create: (_) => PortfolioProvider()),
+        ChangeNotifierProvider(create: (_) => LeaderboardProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, _) {
           return MaterialApp(
-            title: 'Stock Sim',
+            title: 'StockSim BD',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.darkTheme,
             locale: localeProvider.locale,

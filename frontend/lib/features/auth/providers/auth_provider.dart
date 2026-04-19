@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/services/api_service.dart';
@@ -21,7 +20,6 @@ class AuthProvider extends ChangeNotifier {
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: '779423654508-urmdpmdjk8qjnqh6otmacmmn99v2t6ml.apps.googleusercontent.com',
-    scopes: ['email', 'profile'],
   );
 
   AuthStatus _status = AuthStatus.initial;
@@ -108,14 +106,10 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. On Web, try silent sign-in first to avoid popups
-      GoogleSignInAccount? googleUser;
-      if (kIsWeb) {
-        googleUser = await _googleSignIn.signInSilently();
-      }
-
-      // 2. If silent failed or not on web, trigger full Sign-In
-      googleUser ??= await _googleSignIn.signIn();
+      // Trigger full Sign-In directly. 
+      // Do not use signInSilently here as it causes popup blockers to kill the subsequent signIn(), 
+      // because the async gap breaks the user-click context.
+      final googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         _status = AuthStatus.unauthenticated;
@@ -124,15 +118,7 @@ class AuthProvider extends ChangeNotifier {
         return;
       }
 
-      // 3. On Web, request permissions if not already granted
-      if (kIsWeb) {
-        bool hasScopes = await _googleSignIn.canAccessScopes(['email', 'profile']);
-        if (!hasScopes) {
-          await _googleSignIn.requestScopes(['email', 'profile']);
-        }
-      }
-
-      // 4. Get tokens
+      // Get tokens
       final googleAuth = await googleUser.authentication;
       final idToken = googleAuth.idToken;
       final accessToken = googleAuth.accessToken;

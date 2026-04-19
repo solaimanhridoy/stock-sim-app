@@ -6,6 +6,7 @@ import '../../../core/localization/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../dashboard/providers/market_provider.dart';
+import 'stock_detail_screen.dart';
 
 /// Landing page after login with simulation controls.
 class DashboardScreen extends StatefulWidget {
@@ -19,7 +20,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // Initial fetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MarketProvider>().fetchMarketData();
     });
@@ -130,7 +130,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ],
                             ),
                             ElevatedButton.icon(
-                              onPressed: market.isLoading ? null : () => market.nextDay(),
+                              onPressed: market.isLoading ? null : () async {
+                                await market.nextDay();
+                                // Refresh user balance/profile after day advance
+                                if (context.mounted) {
+                                  context.read<AuthProvider>().initializeAuth();
+                                }
+                              },
                               icon: const Icon(Icons.skip_next_rounded),
                               label: Text(t.translate('next_day')),
                               style: ElevatedButton.styleFrom(
@@ -152,7 +158,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           icon: Icons.search_rounded,
                         ),
                         onChanged: (val) {
-                          // TODO: Implement search filter
+                          market.setSearchQuery(val);
                         },
                       ),
                       const SizedBox(height: 32),
@@ -174,7 +180,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const SizedBox(height: 24),
                         _buildSummarySection(t.translate('top_losers'), market.marketSummary?['losers'], Colors.redAccent),
                         const SizedBox(height: 32),
-                        Text('All Stocks', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700)),
+                        Text(t.translate('all_stocks'), style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 12),
                       ],
                     ),
@@ -183,46 +189,64 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final stock = market.stocks[index];
-                        final change = stock['change_percentage'] ?? 0.0;
+                        final change = (stock['change_percentage'] as num?)?.toDouble() ?? 0.0;
                         final color = change >= 0 ? Colors.greenAccent : Colors.redAccent;
                         final trendIcon = change >= 0 ? Icons.trending_up_rounded : Icons.trending_down_rounded;
+                        final closePrice = double.tryParse(stock['close'].toString()) ?? 0;
 
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppTheme.surfaceCard,
-                            borderRadius: AppTheme.borderRadiusMd,
-                            boxShadow: [
-                              BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2)),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                                child: Icon(trendIcon, color: color, size: 24),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(stock['ticker'], style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
-                                    Text(stock['company_name'] ?? '', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                  ],
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StockDetailScreen(
+                                  ticker: stock['ticker'],
+                                  companyName: stock['company_name'] ?? '',
+                                  currentPrice: closePrice,
+                                  changePercentage: change,
                                 ),
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text('৳ ${stock['close']}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800)),
-                                  Text('${change > 0 ? '+' : ''}$change%', style: GoogleFonts.inter(fontSize: 13, color: color, fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                            ],
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surfaceCard,
+                              borderRadius: AppTheme.borderRadiusMd,
+                              boxShadow: [
+                                BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2)),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                                  child: Icon(trendIcon, color: color, size: 24),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(stock['ticker'], style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                                      Text(stock['company_name'] ?? '', style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('৳ ${stock['close']}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800)),
+                                    Text('${change > 0 ? '+' : ''}$change%', style: GoogleFonts.inter(fontSize: 13, color: color, fontWeight: FontWeight.w600)),
+                                  ],
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.chevron_right_rounded, color: AppTheme.textMuted, size: 20),
+                              ],
+                            ),
                           ),
                         );
                       },
@@ -253,7 +277,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(s['ticker'], style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s['ticker'], style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                        if (s['company_name'] != null)
+                          Text(s['company_name'], style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
+                  ),
                   Text('${s['change_percentage']}%', style: GoogleFonts.inter(color: color, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -265,7 +298,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _formatBalance(dynamic balance) {
     if (balance == null) return '1,00,000.00';
     final num = (balance is double) ? balance : double.tryParse('$balance') ?? 0;
-    // Bangladeshi number format: 1,00,000.00
     final parts = num.toStringAsFixed(2).split('.');
     final intPart = parts[0];
     final decPart = parts[1];

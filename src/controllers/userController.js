@@ -8,7 +8,7 @@ const getProfile = async (req, res) => {
   try {
     const result = await db.query(
       `SELECT id, google_id, email, display_name, avatar_url,
-              language, experience, virtual_balance, created_at
+              language, experience, virtual_balance, simulation_date, created_at
        FROM users WHERE id = $1`,
       [req.userId]
     );

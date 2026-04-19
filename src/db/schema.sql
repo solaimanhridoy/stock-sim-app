@@ -20,6 +20,7 @@ CREATE TABLE users (
     language        VARCHAR(2)  DEFAULT NULL CHECK (language IN ('bn', 'en')),
     experience      VARCHAR(20) DEFAULT NULL CHECK (experience IN ('beginner', 'intermediate')),
     virtual_balance DECIMAL(12,2) NOT NULL DEFAULT 100000.00,
+    simulation_date DATE DEFAULT NULL,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

@@ -61,6 +61,45 @@ class AppLocalizations {
       'top_gainers': 'Top Gainers',
       'top_losers': 'Top Losers',
       'search_stocks': 'Search Stocks...',
+      'all_stocks': 'All Stocks',
+
+      // Stock Detail
+      'current_price': 'Current Price',
+      'price_history': 'Price History (Last 30 Days)',
+      'price_data': 'Price Data',
+      'your_holding': 'Your Holding',
+      'shares_owned': 'Shares Owned',
+      'avg_price': 'Avg. Buy Price',
+      'current_value': 'Current Value',
+      'profit_loss': 'Profit / Loss',
+
+      // Trading
+      'buy': 'BUY',
+      'sell': 'SELL',
+      'price_per_share': 'Price per share',
+      'quantity': 'Quantity',
+      'total_cost': 'Total',
+      'available_balance': 'Available Balance',
+
+      // Portfolio
+      'portfolio': 'Portfolio',
+      'total_portfolio_value': 'Total Portfolio Value',
+      'cash': 'Cash',
+      'holdings': 'Holdings',
+      'history': 'History',
+      'shares': 'shares',
+      'no_holdings': 'No holdings yet',
+      'start_trading': 'Start trading to build your portfolio!',
+      'no_transactions': 'No transactions yet',
+
+      // Leaderboard
+      'leaderboard': 'Leaderboard',
+      'leaderboard_subtitle': 'Top investors ranked by portfolio value',
+      'no_rankings': 'No rankings yet',
+      'you': 'YOU',
+
+      // Navigation
+      'market': 'Market',
 
       // General
       'loading': 'Loading...',
@@ -110,6 +149,45 @@ class AppLocalizations {
       'top_gainers': 'সেরা লাভজনক',
       'top_losers': 'সেরা লোকসান',
       'search_stocks': 'শেয়ার খুঁজুন...',
+      'all_stocks': 'সকল শেয়ার',
+
+      // Stock Detail
+      'current_price': 'বর্তমান মূল্য',
+      'price_history': 'মূল্যের ইতিহাস (শেষ ৩০ দিন)',
+      'price_data': 'মূল্যের তথ্য',
+      'your_holding': 'আপনার হোল্ডিং',
+      'shares_owned': 'মালিকানাধীন শেয়ার',
+      'avg_price': 'গড় ক্রয়মূল্য',
+      'current_value': 'বর্তমান মূল্য',
+      'profit_loss': 'লাভ / ক্ষতি',
+
+      // Trading
+      'buy': 'কিনুন',
+      'sell': 'বিক্রি',
+      'price_per_share': 'প্রতি শেয়ারের মূল্য',
+      'quantity': 'পরিমাণ',
+      'total_cost': 'মোট',
+      'available_balance': 'ব্যবহারযোগ্য ব্যালেন্স',
+
+      // Portfolio
+      'portfolio': 'পোর্টফোলিও',
+      'total_portfolio_value': 'মোট পোর্টফোলিও মূল্য',
+      'cash': 'নগদ',
+      'holdings': 'হোল্ডিংস',
+      'history': 'ইতিহাস',
+      'shares': 'শেয়ার',
+      'no_holdings': 'কোনো হোল্ডিং নেই',
+      'start_trading': 'পোর্টফোলিও তৈরি করতে ট্রেডিং শুরু করুন!',
+      'no_transactions': 'কোনো লেনদেন নেই',
+
+      // Leaderboard
+      'leaderboard': 'লিডারবোর্ড',
+      'leaderboard_subtitle': 'পোর্টফোলিও মূল্য অনুসারে শীর্ষ বিনিয়োগকারী',
+      'no_rankings': 'এখনো কোনো র‌্যাঙ্কিং নেই',
+      'you': 'আপনি',
+
+      // Navigation
+      'market': 'মার্কেট',
 
       // General
       'loading': 'লোড হচ্ছে...',

@@ -19,6 +19,7 @@ const sanitizeUser = (u) => ({
   language: u.language,
   experience: u.experience,
   virtualBalance: parseFloat(u.virtual_balance),
+  simulationDate: u.simulation_date,
 });
 
 /** Set the refresh-token cookie with secure defaults. */

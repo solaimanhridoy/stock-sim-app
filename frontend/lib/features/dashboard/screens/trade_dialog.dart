@@ -48,7 +48,7 @@ class _TradeDialogState extends State<TradeDialog> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final auth = context.watch<AuthProvider>();
-    final balance = (auth.user?['virtualBalance'] as num?)?.toDouble() ?? 0;
+    final balance = _toDouble(auth.user?['virtualBalance']) ?? 0;
     final isBuy = widget.isBuy;
     final accentColor = isBuy ? AppTheme.success : AppTheme.error;
 
@@ -268,5 +268,12 @@ class _TradeDialogState extends State<TradeDialog> {
         _processing = false;
       });
     }
+  }
+
+  static double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }

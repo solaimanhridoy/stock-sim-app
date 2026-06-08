@@ -189,7 +189,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         final stock = market.stocks[index];
-                        final change = (stock['change_percentage'] as num?)?.toDouble() ?? 0.0;
+                        final change = _toDouble(stock['change_percentage']) ?? 0.0;
                         final color = change >= 0 ? Colors.greenAccent : Colors.redAccent;
                         final trendIcon = change >= 0 ? Icons.trending_up_rounded : Icons.trending_down_rounded;
                         final closePrice = double.tryParse(stock['close'].toString()) ?? 0;
@@ -311,5 +311,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       (m) => ',',
     );
     return '$formatted,$lastThree.$decPart';
+  }
+
+  static double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }

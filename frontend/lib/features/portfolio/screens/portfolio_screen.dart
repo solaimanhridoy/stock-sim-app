@@ -73,7 +73,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
                         Text(t.translate('total_portfolio_value'), style: GoogleFonts.inter(fontSize: 12, color: Colors.white70)),
                         const SizedBox(height: 4),
                         Text(
-                          '৳ ${_formatBD((summary['total_portfolio_value'] as num?)?.toDouble() ?? 100000)}',
+                          '৳ ${_formatBD(_toDouble(summary['total_portfolio_value']) ?? 100000)}',
                           style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.white),
                         ),
                         const SizedBox(height: 12),
@@ -81,13 +81,13 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
                           children: [
                             _summaryChip(
                               t.translate('profit_loss'),
-                              '${(summary['total_pnl'] as num?) != null && (summary['total_pnl'] as num) >= 0 ? '+' : ''}৳${(summary['total_pnl'] as num?)?.toStringAsFixed(2) ?? '0'}',
-                              (summary['total_pnl'] as num?) != null && (summary['total_pnl'] as num) >= 0,
+                              '${(_toDouble(summary['total_pnl']) ?? 0) >= 0 ? '+' : ''}৳${_toDouble(summary['total_pnl'])?.toStringAsFixed(2) ?? '0'}',
+                              (_toDouble(summary['total_pnl']) ?? 0) >= 0,
                             ),
                             const SizedBox(width: 8),
                             _summaryChip(
                               t.translate('cash'),
-                              '৳${_formatBD((summary['cash_balance'] as num?)?.toDouble() ?? 0)}',
+                              '৳${_formatBD(_toDouble(summary['cash_balance']) ?? 0)}',
                               true,
                             ),
                           ],
@@ -168,8 +168,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
         itemCount: portfolio.holdings.length,
         itemBuilder: (context, index) {
           final h = portfolio.holdings[index];
-          final pnl = (h['unrealized_pnl'] as num?)?.toDouble() ?? 0;
-          final pnlPct = (h['pnl_percentage'] as num?)?.toDouble() ?? 0;
+          final pnl = _toDouble(h['unrealized_pnl']) ?? 0;
+          final pnlPct = _toDouble(h['pnl_percentage']) ?? 0;
           final isPositive = pnl >= 0;
           final color = isPositive ? AppTheme.success : AppTheme.error;
 
@@ -195,7 +195,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(h['ticker'], style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
-                          Text('${h['quantity']} ${t.translate('shares')} @ ৳${(h['avg_price'] as num).toStringAsFixed(2)}',
+                          Text('${h['quantity']} ${t.translate('shares')} @ ৳${(_toDouble(h['avg_price']) ?? 0).toStringAsFixed(2)}',
                               style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary)),
                         ],
                       ),
@@ -203,7 +203,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('৳${(h['market_value'] as num).toStringAsFixed(0)}',
+                        Text('৳${(_toDouble(h['market_value']) ?? 0).toStringAsFixed(0)}',
                             style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.textPrimary)),
                         Text(
                           '${isPositive ? '+' : ''}${pnl.toStringAsFixed(0)} (${pnlPct.toStringAsFixed(1)}%)',
@@ -261,7 +261,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('${tx['action']} ${tx['ticker']}', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textPrimary)),
-                    Text('${tx['quantity']} × ৳${(tx['price'] as num).toStringAsFixed(2)}',
+                    Text('${tx['quantity']} × ৳${(_toDouble(tx['price']) ?? 0).toStringAsFixed(2)}',
                         style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary)),
                   ],
                 ),
@@ -269,7 +269,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('৳${(tx['total_value'] as num).toStringAsFixed(0)}',
+                  Text('৳${(_toDouble(tx['total_value']) ?? 0).toStringAsFixed(0)}',
                       style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: color)),
                   Text(tx['date'].toString().split('T')[0], style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textMuted)),
                 ],
@@ -299,6 +299,14 @@ class _PortfolioScreenState extends State<PortfolioScreen> with SingleTickerProv
         ),
       ),
     );
+  }
+
+  /// Safely converts a JSON value (String, num, or null) to double.
+  static double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 
   String _formatBD(double num) {

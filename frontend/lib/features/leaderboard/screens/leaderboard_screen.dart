@@ -78,7 +78,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       itemBuilder: (context, index) {
                         final entry = lb.leaderboard[index];
                         final rank = entry['rank'] as int;
-                        final profitPct = (entry['profit_pct'] as num).toDouble();
+                        final profitPct = _toDouble(entry['profit_pct']) ?? 0.0;
                         final isCurrentUser = entry['is_current_user'] == true;
                         final isPositive = profitPct >= 0;
 
@@ -150,7 +150,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                       ],
                                     ),
                                     Text(
-                                      '৳${(entry['total_value'] as num).toStringAsFixed(0)}',
+                                      '৳${(_toDouble(entry['total_value']) ?? 0).toStringAsFixed(0)}',
                                       style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textSecondary),
                                     ),
                                   ],
@@ -206,5 +206,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         ),
       ),
     );
+  }
+
+  static double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }

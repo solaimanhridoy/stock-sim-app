@@ -172,13 +172,13 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
                                 child: Column(
                                   children: [
                                     _holdingRow(t.translate('shares_owned'), '${_holding!['quantity']}'),
-                                    _holdingRow(t.translate('avg_price'), '৳ ${(_holding!['avg_price'] as num).toStringAsFixed(2)}'),
-                                    _holdingRow(t.translate('current_value'), '৳ ${(_holding!['current_value'] as num?)?.toStringAsFixed(2) ?? '-'}'),
+                                    _holdingRow(t.translate('avg_price'), '৳ ${(_toDouble(_holding!['avg_price']) ?? 0).toStringAsFixed(2)}'),
+                                    _holdingRow(t.translate('current_value'), '৳ ${(_toDouble(_holding!['current_value']) ?? 0).toStringAsFixed(2)}'),
                                     _holdingRow(
                                       t.translate('profit_loss'),
-                                      '৳ ${(_holding!['pnl'] as num?)?.toStringAsFixed(2) ?? '-'}',
-                                      valueColor: (_holding!['pnl'] as num?) != null
-                                          ? ((_holding!['pnl'] as num) >= 0 ? AppTheme.success : AppTheme.error)
+                                      '৳ ${(_toDouble(_holding!['pnl']) ?? 0).toStringAsFixed(2)}',
+                                      valueColor: _toDouble(_holding!['pnl']) != null
+                                          ? ((_toDouble(_holding!['pnl'])!) >= 0 ? AppTheme.success : AppTheme.error)
                                           : null,
                                     ),
                                   ],
@@ -279,7 +279,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
         companyName: widget.companyName,
         price: widget.currentPrice,
         isBuy: isBuy,
-        maxSellQuantity: _holding != null ? (_holding!['quantity'] as int) : 0,
+        maxSellQuantity: _holding != null ? (int.tryParse(_holding!['quantity'].toString()) ?? 0) : 0,
         onTradeComplete: () {
           _loadStockDetail(); // Refresh holding data
           context.read<MarketProvider>().fetchMarketData(); // Refresh balance
@@ -292,6 +292,13 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
     if (vol >= 1000000) return '${(vol / 1000000).toStringAsFixed(1)}M';
     if (vol >= 1000) return '${(vol / 1000).toStringAsFixed(1)}K';
     return vol.toString();
+  }
+
+  static double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 }
 

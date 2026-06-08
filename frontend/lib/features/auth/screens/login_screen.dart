@@ -177,9 +177,9 @@ class _LoginScreenState extends State<LoginScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     '🌐',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16),
                   ),
                   const SizedBox(width: 8),
                   AnimatedSwitcher(
@@ -293,7 +293,7 @@ class _LoginScreenState extends State<LoginScreen>
             ),
             child: Row(
               children: [
-                Icon(Icons.error_outline, color: AppTheme.error, size: 20),
+                const Icon(Icons.error_outline, color: AppTheme.error, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -307,7 +307,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
                 GestureDetector(
                   onTap: () => auth.clearError(),
-                  child: Icon(Icons.close, color: AppTheme.error, size: 18),
+                  child: const Icon(Icons.close, color: AppTheme.error, size: 18),
                 ),
               ],
             ),

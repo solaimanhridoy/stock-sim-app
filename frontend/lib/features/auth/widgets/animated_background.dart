@@ -53,12 +53,12 @@ class _BackgroundPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // Dark gradient base
     final bgPaint = Paint()
-      ..shader = LinearGradient(
+      ..shader = const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
           AppTheme.background,
-          const Color(0xFF151631),
+          Color(0xFF151631),
           AppTheme.surface,
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));

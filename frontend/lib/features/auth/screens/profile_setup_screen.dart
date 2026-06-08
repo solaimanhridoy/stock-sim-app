@@ -340,7 +340,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
               ),
               suffixIcon: _nameController.text.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.close_rounded,
+                      icon: const Icon(Icons.close_rounded,
                           size: 18, color: AppTheme.textMuted),
                       onPressed: () {
                         _nameController.clear();
@@ -372,7 +372,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
                   padding: const EdgeInsets.only(top: 8, left: 12),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline,
+                      const Icon(Icons.error_outline,
                           size: 14, color: AppTheme.error),
                       const SizedBox(width: 6),
                       Text(
@@ -564,7 +564,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, size: 18, color: AppTheme.error),
+          const Icon(Icons.error_outline, size: 18, color: AppTheme.error),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -579,7 +579,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           GestureDetector(
             onTap: () => setState(() => _saveError = null),
             child:
-                Icon(Icons.close_rounded, size: 16, color: AppTheme.error),
+                const Icon(Icons.close_rounded, size: 16, color: AppTheme.error),
           ),
         ],
       ),
@@ -623,11 +623,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen>
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 250),
             child: _isSaving
-                ? SizedBox(
-                    key: const ValueKey('spinner'),
+                ? const SizedBox(
+                    key: ValueKey('spinner'),
                     width: 24,
                     height: 24,
-                    child: const CircularProgressIndicator(
+                    child: CircularProgressIndicator(
                       strokeWidth: 2.5,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
